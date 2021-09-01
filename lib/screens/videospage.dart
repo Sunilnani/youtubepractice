@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_practice/models/categoriesmodel.dart';
+import 'package:youtube_practice/models/category_model.dart';
 import 'package:youtube_practice/network_calls/base_networks.dart';
 import 'package:youtube_practice/screens/channelpage.dart';
-import 'package:youtube_practice/utils/storagekeys.dart';
+
 class VideosPage extends StatefulWidget {
 
   @override
@@ -18,6 +19,8 @@ class _VideosPageState extends State<VideosPage> {
   //categoriesModel? categories;
   CategoriesModel? allcategories;
   List<Video>? videos;
+  final nameController=TextEditingController();
+  CategoryModel? addcategory;
 
 
   void fetch_categories() async {
@@ -45,10 +48,33 @@ class _VideosPageState extends State<VideosPage> {
     }
   }
 
+  void categoryadd()async{
+    String  name = nameController.text.trim();
+
+    try{
+      final formData = FormData.fromMap({
+        "name" : name,
+        //"image":await MultipartFile.fromFile(productimag.path)
+      });
+      Response response = await dioClient.ref.post("/category/",data: formData
+
+      );
+      setState(() {
+       addcategory= categoryModelFromJson(jsonEncode(response.data)) ;
+        print(response.data["message"]);
+        //responses=response.data["message"];
+      });
+    }
+    catch(e){
+
+    }
+  }
+
 
   @override
   void initState() {
     fetch_categories();
+    categoryadd();
     //fetch_newsfeed();
     super.initState();
   }
@@ -59,6 +85,17 @@ class _VideosPageState extends State<VideosPage> {
         child: Column(
           children: [
             userdata(),
+            InkWell(
+              onTap: (){
+                _addproduct(context);
+              },
+              child: Container(
+                height: 30,
+                width: 35,
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),color: Colors.tealAccent),
+                child: Icon(Icons.add,size: 20,),
+              ),
+            ),
             InkWell(
               onTap: (){
                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ChannelPage()));
@@ -87,5 +124,46 @@ class _VideosPageState extends State<VideosPage> {
         return Text(allcategories!.videos[index].name);
       },
     );
+  }
+  _addproduct(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Add Product'),
+            content: Container(
+              height: 150,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: TextField(
+                        controller: nameController,
+                        decoration: InputDecoration(
+                            hintText: "Enter Name"
+                        ),
+                      ),
+                    ),
+                    // responses==null ?Text("enter valid details"):Text(responses),
+                  ],
+                ),
+              ),
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text('Ok'),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => VideosPage(
+                      ),
+                    ),
+                  );
+                },
+              )
+            ],
+          );
+        });
   }
 }

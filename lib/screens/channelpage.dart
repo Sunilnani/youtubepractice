@@ -15,7 +15,9 @@ class ChannelPage extends StatefulWidget {
 }
 
 class _ChannelPageState extends State<ChannelPage> {
-  ChannelModel? channels;
+  int? categoryindx=1;
+
+   ChannelModel? channels;
   bool _fetching = true;
 
   XFile? image;
@@ -41,9 +43,11 @@ class _ChannelPageState extends State<ChannelPage> {
   }
   final nameController=TextEditingController();
   final description = TextEditingController();
+  final category_id=TextEditingController();
   void productsadd()async{
     String  name = nameController.text.trim();
     String descriptions = description.text.trim();
+
 
     try{
         final formData = FormData.fromMap({
@@ -51,14 +55,16 @@ class _ChannelPageState extends State<ChannelPage> {
         "banner":await MultipartFile.fromFile(bannerimage!.path),
         "profile_pic":await MultipartFile.fromFile(image!.path),
         "description":descriptions,
+          "category_id":categoryindx
         //"image":await MultipartFile.fromFile(productimag.path)
       });
-        Response response = await dioClient.ref.post("/channel/",
+        Response response = await dioClient.ref.post("/channel/",data: formData
 
         );
       setState(() {
         //category = categoryFromJson(jsonEncode(response.data)) ;
         print(response.data["message"]);
+        print(categoryindx);
         //responses=response.data["message"];
       });
     }
@@ -66,6 +72,7 @@ class _ChannelPageState extends State<ChannelPage> {
 
     }
   }
+
   void fetch_channels() async {
     setState(() {
       _fetching = true;
@@ -154,7 +161,14 @@ class _ChannelPageState extends State<ChannelPage> {
       scrollDirection: Axis.vertical,
       itemBuilder: (context,index){
         // return Text(categories!.videos[index].name);
-        return Text(channels!.name);
+        return InkWell(
+          onTap: (){
+            setState(() {
+              categoryindx=channels!.categoryId;
+             // categoryindx=current.categoryId;
+            });
+          },
+            child: Text(channels!.name));
       },
     );
   }
@@ -202,6 +216,7 @@ class _ChannelPageState extends State<ChannelPage> {
                         ),
                       ),
                     ),
+
                     RaisedButton(
                         child: Text("Click To Add"),
                         onPressed: (){
