@@ -18,7 +18,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _fetching = true;
-  int? categoryindx;
+  dynamic? categoryindx;
+  int? channelindx;
   int? indx;
 
   CategoryAddModel? addcategories;
@@ -47,6 +48,9 @@ class _HomePageState extends State<HomePage> {
         _fetching = false;
         //print(categories!.totalCount);
         // print("token here is ${access}");
+        print("categories index is ${categoryindx}");
+
+
 
       });
       print(response);
@@ -292,14 +296,12 @@ class _HomePageState extends State<HomePage> {
     });
     try {
 
-      Response response = await dioClient.ref.get("/category_channels/?category_id=2",
+      Response response = await dioClient.ref.get("/category_channels/?category_id=1",
 
       );
       setState(() {
         channels = channelModelFromJson(jsonEncode(response.data));
         _fetching = false;
-        //print(categories!.totalCount);
-        // print("token here is ${access}");
 
       });
       print(response);
@@ -362,6 +364,9 @@ class _HomePageState extends State<HomePage> {
                 ),
                 userdata(),
                 SizedBox(height: 20,),
+
+
+
                 Align(
                     alignment: Alignment.topLeft,
                     child: Text("Channels",style: TextStyle(color: Colors.amber,fontSize: 18,fontWeight: FontWeight.w600),)),
@@ -383,7 +388,7 @@ class _HomePageState extends State<HomePage> {
     }
     // return Center(child: Text(categories?.categoryName));
     return  SizedBox(
-      height: 50,
+      height: 80,
       child: ListView.builder(
         //physics: NeverScrollableScrollPhysics(),
         itemCount: allcategories!.videos.length,
@@ -391,7 +396,7 @@ class _HomePageState extends State<HomePage> {
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context,index){
-          CategoriesModel current= allcategories!;
+          //CategoriesModel current= allcategories!;
           return Row(
             children: [
               Padding(
@@ -400,15 +405,14 @@ class _HomePageState extends State<HomePage> {
                   onLongPress: (){
                     _deletecategory(context);
                     setState(() {
-                     // channelindx=current.videos[index].categoryId;
                       categoryindx=allcategories!.videos[index].categoryId;
                     });
                   },
                   child: InkWell(
                     onTap: (){
                       setState(() {
-                        // channelindx=current.videos[index].categoryId;
                         indx=allcategories!.videos[index].categoryId;
+
                       });
                     },
                     child: Container(
@@ -417,7 +421,13 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: BorderRadius.circular(7),
                         color: Colors.pink
                       ),
-                        child: Text(allcategories!.videos[index].name)),
+                        child: Column(
+                          children: [
+                            Text(allcategories!.videos[index].name),
+                            Text("index is ${allcategories!.videos[index].categoryId}"),
+                            Text("${indx}")
+                          ],
+                        )),
                   ),
                 ),
               )
@@ -437,15 +447,14 @@ class _HomePageState extends State<HomePage> {
     return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
       itemCount:channels!.videos.length,
-      //itemCount: news!.length,
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
       itemBuilder: (context,index){
 
-        return channels!.videos.isEmpty?Text("no data"):InkWell(
+        return InkWell(
             onTap: (){
               setState(() {
-              // channelindx=channels!.videos[index].categoryId;
+               channelindx=channels!.videos[index].categoryId;
               });
             },
           child: Container(
@@ -455,14 +464,30 @@ class _HomePageState extends State<HomePage> {
              children: [
               Column(
                 crossAxisAlignment:CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(channels!.videos[index].name),
                   SizedBox(height: 20,),
-                  Text(channels!.videos[index].description)
+                  Text(channels!.videos[index].description),
+                  Text("category id are ${channelindx}")
                 ],
-              )
+              ),
+               Spacer(),
+               Container(
+                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(18),
+                     image: DecorationImage(
+                         image: NetworkImage("https://sowmyamatsa.pythonanywhere.com/${channels!.videos[index].profilePic}"),
+                         fit: BoxFit.cover
+                     )
+                 ),
+                 height: 50,
+                 width: 50,
+
+               ),
+
           ],
-        )),
+        )
+          ),
         );
       },
     );
