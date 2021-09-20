@@ -80,6 +80,35 @@ class AuthManager {
     }
   }
 
+  // Future<ResponseData> fetch_categories() async {
+  //   // final formData = FormData.fromMap({
+  //   //   "username": userName,
+  //   //   "password": password
+  //   // });
+  //   //final sharedPreferences = await SharedPreferences.getInstance();
+  //
+  //   Response response;
+  //   try {
+  //     Response response = await dioClient.ref.get("/categories/",
+  //
+  //     );
+  //
+  //     if(response.statusCode == 200) {
+  //       //sharedPreferences.setString(StorageKeys.token, response.data["access"]);
+  //       //sharedPreferences.setString(StorageKeys.refreshToken, response.data["refresh"]);
+  //       return ResponseData("success", ResponseStatus.SUCCESS);
+  //     } else {
+  //       var message = "Unknown error";
+  //       if(response.data?.containsKey("message") == true){
+  //         message = response.data['message'];
+  //       }
+  //       return ResponseData(message, ResponseStatus.FAILED);
+  //     }
+  //   } on Exception catch (err) {
+  //     return ResponseData<dynamic>( 'Please check your internet', ResponseStatus.FAILED);
+  //   }
+  // }
+
   Future<ResponseData> preformRegister(String userName, String pass , String rePass) async {
     final formData = FormData.fromMap({
       "username": userName,
